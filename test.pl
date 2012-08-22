@@ -52,4 +52,5 @@ my $t; $t = AnyEvent->timer(after => 1, interval=> 10, cb => sub {
     say Dumper($task->jobs_info, $task->progress_info);
 });
 $task->wait;
+say Dumper($task->jobs_info, $task->progress_info);
 say "DONE";

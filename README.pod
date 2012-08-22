@@ -1,0 +1,103 @@
+=pod
+
+=head1 NAME
+
+Cmd::HiveRunner - Runs an instance of the Hive CLI as the given user
+
+=head1 VERSION
+
+version 0.001
+
+=head1 SYNOPSIS
+
+  my $hive = Cmd::HiveRunner->new(
+    user => 'sscaffid',
+    conf => { foo => 'bar' }
+  );
+
+  # confs are merged, with conf in run getting precedence.
+  my $job = $hive->run(
+    conf  => { 'mapred.job.queue.name' => 'default' },
+    query => q{select * from t_location LIMIT 5},
+  );
+
+  # if you want to run things synchronously, just do this.
+  $job->wait;
+
+=head1 DESCRIPTION
+
+=head1 ATTRIBUTES
+
+=head2 sudo_path
+
+The path to the sudo command. Will be auto-detected if not specified.
+
+=head2 hive_path
+
+The path to the hive command. Will be auto-detected if not specified.
+
+=head2 user
+
+The user under which to run hive. Will use sudo to change users if necessary.
+
+=head2 conf
+
+A hash of key => value pairs like would be passed to hive with the -hiveconf option.
+
+=head1 METHODS
+
+=head2 new
+
+Construct a new HiveRunner object
+
+=head2 run
+
+Run the hive CLI with the given settings. Accepted parameters:
+
+=over 4
+
+=item user
+
+The user under which to run hive
+
+=item conf
+
+Conf attributes to add-to or override those set in the object
+
+=item query
+
+The HQL query you want Hive to run. I<required>
+
+=back
+
+=for :stopwords cpan testmatrix url annocpan anno bugtracker rt cpants kwalitee diff irc mailto metadata placeholders metacpan
+
+=head1 SUPPORT
+
+=head2 Bugs / Feature Requests
+
+Please report any bugs or feature requests by email to C<bug-cmd-hiverunner at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Cmd-HiveRunner>. You will be automatically notified of any
+progress on the request by the system.
+
+=head2 Source Code
+
+The code is open to the world, and available for you to hack on. Please feel free to browse it and play
+with it, or whatever. If you want to contribute patches, please send me a diff or prod me to pull
+from your repository :)
+
+L<https://github.com/Hercynium/Cmd-HiveRunner>
+
+  git clone git://github.com/Hercynium/Cmd-HiveRunner.git
+
+=head1 AUTHOR
+
+Stephen R. Scaffidi <sscaffidi@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2012 by Stephen R. Scaffidi.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+

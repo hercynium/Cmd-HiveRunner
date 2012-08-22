@@ -190,9 +190,9 @@ __END__
 
 =head1 SYNOPSIS
 
-=head1 METHODS
+=cut
 
-=head2 new
+=method new
 
 Constructs a new Cmd::HiveCLI::Task object. Currently accepts the following parameters:
 
@@ -205,52 +205,52 @@ arguments for running the hive CLI process.
 
 =back
 
-=head2 cmd
+=method cmd
 
 The command used to start the hive CLI process
 
-=head2 start_time
+=method start_time
 
 The unix timestamp of when the hive process was started
 
-=head2 state
+=method state
 
 The current state of the Hive process.
 Can be one of I<ready>, I<started>, or I<finished>.
 
-=head2 history_file
+=method history_file
 
 The file where Hive stores the command history of this invocation
 
-=head2 jobs_info
+=method jobs_info
 
 Returns a hash with info about the jobs run by hive
 
-=head2 progress_info
+=method progress_info
 
 Returns a hash with information about Hive's progress running your query.
 
-=head2 end_time
+=method end_time
 
 The unix timestamp of when the hive command finished
 
-=head2 job_count
+=method job_count
 
 The number of hadoop jobs hive plans to run (or will run)
 
-=head2 running_jobs
+=method running_jobs
 
 How many jobs hive is currently running
 
-=head2 pid
+=method pid
 
 The pid of the hive process
 
-=head2 wait
+=method wait
 
 Wait for the process to finish
 
-=head2 run_time
+=method run_time
 
 The time in seconds for which the hive process has been (or had been) running
 
