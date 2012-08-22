@@ -177,7 +177,7 @@ sub _handle_stderr_line {
         $self->_set_state('finished');
     }
     # nothing else matched?
-    default { print "* $line"; $nomatch = 1; }
+    default { say "* $line"; $nomatch = 1; }
   };
   say $line unless $nomatch;
 }
