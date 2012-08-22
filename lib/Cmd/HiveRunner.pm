@@ -9,7 +9,7 @@ use Data::Dumper;
 use autodie qw(:all);
 use Hash::Merge::Simple qw(merge);
 use File::Which qw(which);
-use Cmd::HiveRunner::Job;
+use Cmd::HiveRunner::Task;
 
 has sudo_path => ( is => 'ro', default => sub { __which_or_die('sudo') } );
 has hive_path => ( is => 'ro', default => sub { __which_or_die('hive') } );
@@ -27,7 +27,7 @@ sub run {
       $self->hive_path, ( map { ("-hiveconf", "$_=$hiveconf{$_}") } keys %hiveconf ),
         '-e', $opt{query}
   );
-  return Cmd::HiveRunner::Job->new( cmd => \@cmd );
+  return Cmd::HiveRunner::Task->new( cmd => \@cmd );
 }
 
 1 && q{ this statement is true }; # truth
@@ -36,4 +36,19 @@ __END__
 =head1 DESCRIPTION
 
 =head1 SYNOPSIS
+
+  my $hive = Cmd::HiveRunner->new(
+    user => 'sscaffid',
+    conf => { foo => 'bar' }
+  );
+
+  # confs are merged, with conf in run getting precedence.
+  my $job = $hive->run(
+    conf  => { 'mapred.job.queue.name' => 'default' },
+    query => q{select * from t_location LIMIT 5},
+  );
+
+  # if you want to run things synchronously, just do this.
+  $job->wait;
+
 
