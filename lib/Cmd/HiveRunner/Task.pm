@@ -68,11 +68,13 @@ sub BUILD {
         $self->_handle_stdout_line($line);
       });
     },
-    on_eof => sub {},
+    on_eof => sub { shift->destroy; close $out_r; close $out_w; },
     on_error => sub {
       my ($hdl, $fatal, $msg) = @_;
       AE::log error => $msg;
       $hdl->destroy;
+      close $out_r;
+      close $out_w;
   });
   $self->_set_out_hdl($out_hdl);
 
@@ -86,24 +88,27 @@ sub BUILD {
         $self->_handle_stderr_line($line);
       });
     },
-    on_eof => sub {},
+    on_eof => sub { shift->destroy; close $err_r; close $err_w; },
     on_error => sub {
       my ($hdl, $fatal, $msg) = @_;
       AE::log error => $msg;
       $hdl->destroy;
+      close $err_r;
+      close $err_w;
   });
   $self->_set_err_hdl($err_hdl);
 
   # run the command in a child process, cv is a condvar.
   my $cmd_pid;
   my $cmd_cv = run_cmd \@cmd,
-    '<'  => \*STDIN,
+    close_all => 1,
+    '<'  => '/dev/null',
     '>'  => $out_w,
     '2>' => $err_w,
     '$$' => \$cmd_pid;
 
   # set the callback for when the command exits.
-  $cmd_cv->cb( sub { $self->_handle_cmd_done } );
+  $cmd_cv->cb( sub { say "BLAARGH"; $self->_handle_cmd_done(@_) } );
 
   $self->_set_pid($cmd_pid);
   $self->_set_cmd_cv($cmd_cv);
@@ -113,10 +118,9 @@ sub BUILD {
 # when the command ends, this method is called.
 sub _handle_cmd_done {
   my ($self, $cv) = @_;
-  #print "Command finished\n";
+  my $retval = $cv->recv;
+  say "** Command finished with code $retval";
   $self->_set_state('finished');
-  $self->_err_hdl->destroy;
-  $self->_out_hdl->destroy;
 }
 
 # The Hive CLI prints out results on STDOUT. This method
@@ -167,7 +171,7 @@ sub _handle_stderr_line {
         merge $self->progress_info, { $1 => { stage => $1, map => $2, reduce => $3 } }
       );
     }
-    when (/Ended Job = (.*)/) {
+    when (/Ended Job = (\w+) (.*)/) {
       my ($job_id) = $1;
       $self->_jobs->{ $job_id }{state}    = 'finished';
       $self->_jobs->{ $job_id }{end_time} = __now();

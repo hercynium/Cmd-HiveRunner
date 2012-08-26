@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use feature ':5.10.0';
 use lib 'lib';
+use EV;
 use AnyEvent;
 use Data::Dumper;
 use Cmd::HiveRunner;
@@ -37,12 +38,12 @@ END_HQL
 #$query = q{select * from dual where c = 'c'};
 
 # set up a hive-runner
-my $hive = Cmd::HiveRunner->new( user => 'sscaffidi', conf => { foo => 'bar' } );
+my $hive = Cmd::HiveRunner->new();# user => 'sscaffidi', conf => { foo => 'bar' } );
 
 # run the query, using the parameters provided in both the runner
 # and in this method-call
 my $task = $hive->run(
-  conf  => { 'mapred.job.queue.name' => 'warehouseteam' },
+  #conf  => { 'mapred.job.queue.name' => 'warehouseteam' },
   query => $query,
 );
 
@@ -51,6 +52,7 @@ my $t; $t = AnyEvent->timer(after => 1, interval=> 10, cb => sub {
     undef $t if $task->state eq 'finished';
     say Dumper($task->jobs_info, $task->progress_info);
 });
-$task->wait;
+AnyEvent->condvar->recv;
+#$task->wait;
 say Dumper($task->jobs_info, $task->progress_info);
 say "DONE";

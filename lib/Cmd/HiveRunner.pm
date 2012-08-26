@@ -14,7 +14,7 @@ use Cmd::HiveRunner::Task;
 has sudo_path => ( is => 'ro', default => sub { __which_or_die('sudo') } );
 has hive_path => ( is => 'ro', default => sub { __which_or_die('hive') } );
 has user => ( is => 'ro' );
-has conf => ( is => 'ro' );
+has conf => ( is => 'ro', default => sub { +{} } );
 
 sub __which_or_die { which $_[0] or croak "Can't find the '$_[0]' command" }
 
